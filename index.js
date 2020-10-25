@@ -23,7 +23,8 @@ class BinOp {
     else if(this.type === '/') return new DNumber(this.arg1 / this.arg2);
   }
 }
-const semantics = grammar.createSemantics().addOperation('evaluateMatch',{
+const semantics = grammar.createSemantics();
+semantics.addOperation('evaluateMatch',{
   int: function(a) {
     return new DNumber(parseInt(this.sourceString, 10));
   },

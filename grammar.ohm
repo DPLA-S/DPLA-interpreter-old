@@ -7,5 +7,5 @@ DPLA {
   float = digit+ "." digit+
 
   symbol = (letter | "_") (letter | digit | "_")*
-  Function = symbol "(" ListOf<Expr, ","> ")"
+  Function = symbol "[" ListOf<Expr, ","> "]"
 }
