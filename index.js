@@ -24,7 +24,7 @@ class BinOp {
       case '-': return new DNumber(this.arg1 - this.arg2);
       case '*': return new DNumber(this.arg1 * this.arg2);
       case '/': return new DNumber(this.arg1 / this.arg2);
-      case '^': return new DNumber(this.arg1 ^ this.arg2);
+      case '^': return new DNumber(this.arg1 ** this.arg2);
       case '%': return new DNumber(this.arg1 % this.arg2);
     }
   }
