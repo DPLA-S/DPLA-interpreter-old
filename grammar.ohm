@@ -1,5 +1,5 @@
 DPLA {
-  Expr = Function | AddExpr | type
+  Expr = AddExpr | type
 
   type = number
   number = float | int
@@ -14,9 +14,9 @@ DPLA {
   | MulExpr "%" PriExpr -- modulus
   | MulExpr "^" PriExpr -- power
   | PriExpr
-  PriExpr = "(" AddExpr ")"
+  PriExpr = "(" AddExpr ")" -- paren
   | number
 
   symbol = (letter | "_") (letter | digit | "_")*
-  Function = symbol "[" ListOf<Expr,","> "]"
+  Assignment = symbol "=" Expr
 }
