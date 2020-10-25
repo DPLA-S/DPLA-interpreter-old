@@ -1,11 +1,22 @@
 DPLA {
-  Expr = Function | type
+  Expr = Function | AddExpr | type
 
   type = number
   number = float | int
   int = digit+
   float = digit+ "." digit+
 
+  AddExpr = number "+" number -- plus
+  | number "-" number -- minus
+  | MulExpr
+  MulExpr = MulExpr "*" PriExpr -- times
+  | MulExpr "/" PriExpr -- divide
+  | MulExpr "%" PriExpr -- modulus
+  | MulExpr "^" PriExpr -- power
+  | PriExpr
+  PriExpr = "(" AddExpr ")"
+  | number
+
   symbol = (letter | "_") (letter | digit | "_")*
-  Function = symbol "[" ListOf<Expr, ","> "]"
+  Function = symbol "[" ListOf<Expr,","> "]"
 }
