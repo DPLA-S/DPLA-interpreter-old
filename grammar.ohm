@@ -1,0 +1,11 @@
+DPLA {
+  Expr = Function | type
+
+  type = number
+  number = float | int
+  int = digit+
+  float = digit+ "." digit+
+
+  symbol = (letter | "_") (letter | digit | "_")*
+  Function = symbol ListOf<Expr, ",">
+}
