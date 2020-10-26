@@ -1,5 +1,5 @@
 DPLA {
-  Expr = AddExpr | type
+  Expr = AddExpr | Assignment | type 
 
   type = number
   number = float | int

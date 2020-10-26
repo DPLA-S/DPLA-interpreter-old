@@ -28,7 +28,7 @@ class DPLA_Assignment {
     this.value = value;
   }
   evaluate(scope) {
-    scope.setSymbol(this.symbol, this.value.evaluate());
+    scope.setSymbol(this.symbol.evaluate(), this.value.evaluate());
   }
 }
 class DPLANumber {
@@ -61,7 +61,7 @@ class BinOp {
 
 const semantics = grammar.createSemantics();
 semantics.addOperation('toAST',{
-  number: (a) => new DPLANumber(a.evaluate()),
+  number: (a) => new DPLANumber(a.sourceEvaluate()),
   AddExpr_plus: (a,_,b) => new BinOp('+', a.toAST(), b.toAST()),
   AddExpr_minus: (a,_,b) => new BinOp('-', a.toAST(), b.toAST()),
   MulExpr_times: (a,_,b) => new BinOp('*', a.toAST(), b.toAST()),
@@ -74,7 +74,7 @@ semantics.addOperation('toAST',{
   },
   Assignment: (a,_,b) => new DPLA_Assignment(a.toAST(), b.toAST())
 });
-semantics.addOperation('evaluate', {
+semantics.addOperation('sourceEvaluate', {
   int: function(a) {
     return parseInt(this.sourceString, 10);
   },
@@ -83,12 +83,13 @@ semantics.addOperation('evaluate', {
   }
 });
 const GlobalScope = new DPLAScope();
-const code = '1 + 1';
+const code = 'answerToEverything = 42';
 const match = grammar.match(code);
 
 if (match.succeeded()) {
-  const result = semantics(match).toAST().evaluate();
+  const result = semantics(match).toAST().evaluate(GlobalScope);
   console.log("\x1b[32m=> " + result);
 } else { 
   console.log('Match error: \n ' + match.message);
 }
+console.log(GlobalScope.store)
