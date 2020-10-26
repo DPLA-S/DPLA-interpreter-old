@@ -58,6 +58,21 @@ class BinOp {
     }
   }
 }
+class DPLAFunction {
+  constructor(symbol, args) {
+    this.symbol = symbol;
+    this.args = args;
+  }
+  evaluate(scope) {
+    try {
+      const func = scope.getSymbol(this.symbol.evaluate());
+      const args = this.args.map(item => item.evaluate(scope));
+      func.apply(null, args);
+    } catch (err) {
+      throw new Error("DPLA Error: No such function \"" + this.symbol.evaluate() + "\"");
+    }
+  }
+}
 
 const semantics = grammar.createSemantics();
 semantics.addOperation('toAST',{
@@ -72,7 +87,9 @@ semantics.addOperation('toAST',{
   symbol: function(a,_) {
     return new DPLASymbol(this.sourceString);
   },
-  Assignment: (a,_,b) => new DPLA_Assignment(a.toAST(), b.toAST())
+  Assignment: (a,_,b) => new DPLA_Assignment(a.toAST(), b.toAST()),
+  'Function': (name,_,args,$) => new DPLAFunction(name.toAST(), args.toAST()),
+  Arguments: a => a.asIteration().toAST()
 });
 semantics.addOperation('sourceEvaluate', {
   int: function(a) {
@@ -82,14 +99,21 @@ semantics.addOperation('sourceEvaluate', {
     return parseFloat(this.sourceString);
   }
 });
-const GlobalScope = new DPLAScope();
-const code = 'answerToEverything = 42';
-const match = grammar.match(code);
 
-if (match.succeeded()) {
-  const result = semantics(match).toAST().evaluate(GlobalScope);
-  console.log("\x1b[32m=> " + result);
-} else { 
-  console.log('Match error: \n ' + match.message);
+const GlobalScope = new DPLAScope();
+//DPLA function defs
+GlobalScope.setSymbol('print', data => {
+  console.log(data)
+});
+
+function runDPLAInCurrentContext(code) {
+  const match = grammar.match(code);
+  if (match.succeeded()) {
+    const result = semantics(match).toAST().evaluate(GlobalScope);
+    console.log("\x1b[32m=> " + result);
+  } else { 
+    throw new Error('DPLA Syntax error: \n ' + match.message);
+  }
 }
-console.log(GlobalScope.store)
+const code = 'print[10 + 10 * 10]';
+runDPLAInCurrentContext(code);

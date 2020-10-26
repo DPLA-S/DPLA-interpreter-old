@@ -1,13 +1,13 @@
 DPLA {
-  Expr = AddExpr | Assignment | type 
+  Expr = AddExpr | Assignment | CodeBlock | Function | type 
 
   type = number
   number = float | int
   int = digit+
   float = digit+ "." digit+
 
-  AddExpr = number "+" number -- plus
-  | number "-" number -- minus
+  AddExpr = AddExpr "+" MulExpr -- plus
+  | AddExpr "-" MulExpr -- minus
   | MulExpr
   MulExpr = MulExpr "*" PriExpr -- times
   | MulExpr "/" PriExpr -- divide
@@ -19,4 +19,8 @@ DPLA {
 
   symbol = (letter | "_") (letter | digit | "_")*
   Assignment = symbol "=" Expr
+
+  Function = symbol  "[" Arguments "]"
+  Arguments = ListOf<Expr,",">
+  CodeBlock = "(" Expr (Expr | "\n")* ")"
 }
