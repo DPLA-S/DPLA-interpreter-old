@@ -106,14 +106,17 @@ GlobalScope.setSymbol('print', data => {
   console.log(data)
 });
 
-function runDPLAInCurrentContext(code) {
+function runDPLAInCurrentContext(code, printReturn) {
+  printReturn = printReturn || false;
   const match = grammar.match(code);
   if (match.succeeded()) {
     const result = semantics(match).toAST().evaluate(GlobalScope);
-    console.log("\x1b[32m=> " + result);
+    if (printReturn) {
+      console.log("\x1b[32m=> " + result);
+    }
   } else { 
     throw new Error('DPLA Syntax error: \n ' + match.message);
   }
 }
-const code = 'print[10 + 10 * 10]';
-runDPLAInCurrentContext(code);
+runDPLAInCurrentContext('a = 42');
+runDPLAInCurrentContext('print[a]');

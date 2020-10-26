@@ -1,5 +1,5 @@
 DPLA {
-  Expr = AddExpr | Assignment | CodeBlock | Function | type 
+  Expr = AddExpr | Assignment | CodeBlock | Function | symbol | type 
 
   type = number
   number = float | int
