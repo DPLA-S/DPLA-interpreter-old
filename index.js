@@ -28,7 +28,7 @@ class DPLA_Assignment {
     this.value = value;
   }
   evaluate(scope) {
-    scope.setSymbol(this.symbol.name, this.value.evaluate());
+    scope.setSymbol(this.symbol.name, this.value.evaluate(scope));
   }
 }
 class DPLANumber {
@@ -39,6 +39,14 @@ class DPLANumber {
     return this.val;
   }
 }
+class DPLAString {
+  constructor(str) {
+    this.value = str;
+  }
+  evaluate(scope) {
+    return String(this.value);
+  }
+}
 class BinOp {
   constructor(type, arg1, arg2) {
     this.type = type;
@@ -46,15 +54,15 @@ class BinOp {
     this.arg2 = arg2;
   }
   evaluate(scope) {
-    const arg1 = this.arg1.evaluate();
-    const arg2 = this.arg2.evaluate();
+    const arg1 = this.arg1.evaluate(scope);
+    const arg2 = this.arg2.evaluate(scope);
     switch (this.type) {
-      case '+': return new DPLANumber(arg1 + arg2).evaluate();
-      case '-': return new DPLANumber(arg1 - arg2).evaluate();
-      case '*': return new DPLANumber(arg1 * arg2).evaluate();
-      case '/': return new DPLANumber(arg1 / arg2).evaluate();
-      case '^': return new DPLANumber(arg1 ** arg2).evaluate();
-      case '%': return new DPLANumber(arg1 % arg2).evaluate();
+      case '+': return new DPLANumber(arg1 + arg2).evaluate(scope);
+      case '-': return new DPLANumber(arg1 - arg2).evaluate(scope);
+      case '*': return new DPLANumber(arg1 * arg2).evaluate(scope);
+      case '/': return new DPLANumber(arg1 / arg2).evaluate(scope);
+      case '^': return new DPLANumber(arg1 ** arg2).evaluate(scope);
+      case '%': return new DPLANumber(arg1 % arg2).evaluate(scope);
     }
   }
 }
@@ -64,12 +72,13 @@ class DPLAFunction {
     this.args = args;
   }
   evaluate(scope) {
-    try {
-      const func = scope.getSymbol(this.symbol.name);
+    const func = scope.getSymbol(this.symbol.name);
+    if (!func) {
+      throw new Error("DPLA Error: No such function \"" + this.symbol.name + "\" ");
+      return;
+    } else {
       const args = this.args.map(item => item.evaluate(scope));
-      func.apply(null, args);
-    } catch (err) {
-      throw new Error("DPLA Error: No such function \"" + this.symbol.name + "\"");
+      return func.apply(null, args);
     }
   }
 }
@@ -77,6 +86,7 @@ class DPLAFunction {
 const semantics = grammar.createSemantics();
 semantics.addOperation('toAST',{
   number: (a) => new DPLANumber(a.sourceEvaluate()),
+  string: (_,a,$) => new DPLAString(a.sourceString),
   AddExpr_plus: (a,_,b) => new BinOp('+', a.toAST(), b.toAST()),
   AddExpr_minus: (a,_,b) => new BinOp('-', a.toAST(), b.toAST()),
   MulExpr_times: (a,_,b) => new BinOp('*', a.toAST(), b.toAST()),
@@ -105,6 +115,14 @@ const GlobalScope = new DPLAScope();
 GlobalScope.setSymbol('print', data => {
   console.log(data)
 });
+GlobalScope.setSymbol('max', (a,b,c) => {
+  const result = Math.max(a,b,c);
+  if (result === -Infinity) {
+    return null;
+  } else {
+    return result;
+  }
+});
 
 function runDPLAInCurrentContext(code, printReturn) {
   printReturn = printReturn || false;
@@ -118,5 +136,5 @@ function runDPLAInCurrentContext(code, printReturn) {
     throw new Error('DPLA Syntax error: \n ' + match.message);
   }
 }
-runDPLAInCurrentContext('a = 42');
-runDPLAInCurrentContext('print[a]');
+runDPLAInCurrentContext('print["Hello World"]');
+
