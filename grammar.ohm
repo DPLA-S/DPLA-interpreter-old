@@ -1,7 +1,7 @@
 DPLA {
-  Expr = AddExpr | Assignment | CodeBlock | Function | symbol | type 
+  Expr = AddExpr | Assignment | CodeBlock | Function | symbol | type
 
-  type = number | string
+  type = number | string 
   number = float | int
   int = digit+
   float = digit+ "." digit+

@@ -112,8 +112,8 @@ semantics.addOperation('sourceEvaluate', {
 
 const GlobalScope = new DPLAScope();
 //DPLA function defs
-GlobalScope.setSymbol('print', data => {
-  console.log(data)
+GlobalScope.setSymbol('print', function() {
+  console.log(Array.from(arguments).join(' '));
 });
 GlobalScope.setSymbol('max', (a,b,c) => {
   const result = Math.max(a,b,c);
