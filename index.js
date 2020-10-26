@@ -19,7 +19,7 @@ class DPLASymbol {
     this.name = name;
   }
   evaluate(scope) {
-    return this.name;
+    return scope.getSymbol(this.name);
   }
 }
 class DPLA_Assignment {
@@ -28,7 +28,7 @@ class DPLA_Assignment {
     this.value = value;
   }
   evaluate(scope) {
-    scope.setSymbol(this.symbol.evaluate(), this.value.evaluate());
+    scope.setSymbol(this.symbol.name, this.value.evaluate());
   }
 }
 class DPLANumber {
@@ -65,11 +65,11 @@ class DPLAFunction {
   }
   evaluate(scope) {
     try {
-      const func = scope.getSymbol(this.symbol.evaluate());
+      const func = scope.getSymbol(this.symbol.name);
       const args = this.args.map(item => item.evaluate(scope));
       func.apply(null, args);
     } catch (err) {
-      throw new Error("DPLA Error: No such function \"" + this.symbol.evaluate() + "\"");
+      throw new Error("DPLA Error: No such function \"" + this.symbol.name + "\"");
     }
   }
 }
